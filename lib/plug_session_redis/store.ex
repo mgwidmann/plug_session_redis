@@ -5,22 +5,22 @@ defmodule PlugSessionRedis.Store do
   ```
   plug Plug.Session,
     store: PlugSessionRedis.Store,
-    key: "_my_app_key",           # Cookie name where the id is stored
-    table: :redis_sessions,       # Name of poolboy queue, make up anything
-    signing_salt: "123456",       # Keep this private
-    encryption_salt: "654321",    # Keep this private
-    ttl: 360,                     # Optional, defaults to :infinity
-    serializer: CustomSerializer, # Optional, defaults to `PlugSessionRedis.BinaryEncoder`
-    path: &MyPath.path_for_sid/1  # Optional, defaults to the passed in session id only
+    key: "_my_app_key",              # Cookie name where the id is stored
+    table: :redis_sessions,          # Name of poolboy queue, make up anything
+    signing_salt: "123456",          # Keep this private
+    encryption_salt: "654321",       # Keep this private
+    ttl: 360,                        # Optional, defaults to :infinity
+    serializer: CustomSerializer,    # Optional, defaults to `PlugSessionRedis.BinaryEncoder`
+    db_path: &MyPath.path_for_sid/1  # Optional, defaults to the passed in session id only
   ```
 
   Custom Serializers can work to provide a way to encode and decode the data stored in Redis if you're integrating
   with a legacy system. You provide the module name that implements `encode/1`, `encode!/1`, `decode/1`, and `decode!/1`
   which is called by `Plug` when fetching and storing the session state back.
 
-  Path dictates under what key within redis to store the key. You will be passed a single session ID binary and expected
+  DB path dictates under what key within redis to store the key. You will be passed a single session ID binary and expected
   to return another binary indicating where the key should be stored/fetched from. This allows you to store data under
-  a nested key so that other data can be stored within the same database. (i.e. key can become "sessions:" <> id instead)
+  a nested key so that other data can be stored within the same database. (i.e. key can become `"sessions:" <> id` instead)
   """
   alias PlugSessionRedis.BinaryEncoder
   @behaviour Plug.Session.Store
@@ -30,7 +30,7 @@ defmodule PlugSessionRedis.Store do
       Keyword.fetch!(opts, :table),
       Keyword.get(opts, :ttl, :infinite),
       Keyword.get(opts, :serializer, BinaryEncoder),
-      Keyword.get(opts, :path, &__MODULE__.path/1)
+      Keyword.get(opts, :db_path, &__MODULE__.path/1)
     }
   end
 

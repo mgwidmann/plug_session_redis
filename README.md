@@ -35,7 +35,7 @@ plug Plug.Session,
   encryption_salt: "654321",    #
   ttl: 360,                     # use redis EXPIRE secs
   serializer: CustomSerializer, # Optional, defaults to `PlugSessionRedis.BinaryEncoder`
-  path: &MyPath.path/1          # Optional, defaults to passing the session ID through unmodified
+  db_path: &MyPath.path/1       # Optional, defaults to passing the session ID through unmodified
 ```
 
 ## Custom Serializers
@@ -46,7 +46,7 @@ An example serializer is shown in `lib/plug_session_redis/binary_encoder.ex`. Fo
 
 ## Storing data in another key
 
-The `:path` option above when configuring the plug lets you define a function which will take in the session ID binary string and returns a new storage location. If you'd like, for example, to store all sessions under the key `"myapp:sessions:" <> id` then an example implementation of the above configured `MyPath.path/1` would look like this:
+The `:db_path` option above when configuring the plug lets you define a function which will take in the session ID binary string and returns a new storage location. If you'd like, for example, to store all sessions under the key `"myapp:sessions:" <> id` then an example implementation of the above configured `MyPath.path/1` would look like this:
 
 ```elixir
 defmodule MyPath do
